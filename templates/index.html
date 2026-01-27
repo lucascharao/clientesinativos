@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes Inativos - Mutumilk</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Clientes Inativos</h1>
+            <p>Identifique clientes sem movimentação no período selecionado</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <form id="uploadForm">
+                    <!-- Upload de arquivo -->
+                    <div class="form-group">
+                        <label for="fileInput" class="file-label">
+                            <span class="file-icon">📁</span>
+                            <span id="fileName">Insira sua planilha aqui</span>
+                            <input type="file" id="fileInput" name="file" accept=".xlsx,.xls" required>
+                        </label>
+                    </div>
+
+                    <!-- Tipo de filtro -->
+                    <div class="form-group">
+                        <label>Tipo de Filtro:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="filterType" value="days" checked>
+                                <span>Por Dias</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filterType" value="months">
+                                <span>Por Meses do Ano</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Filtro por dias -->
+                    <div class="form-group" id="daysFilter">
+                        <label>Selecione a faixa de inatividade:</label>
+                        <div class="button-group">
+                            <button type="button" class="filter-btn active" data-range="0-30">0-30 dias</button>
+                            <button type="button" class="filter-btn" data-range="31-60">31-60 dias</button>
+                            <button type="button" class="filter-btn" data-range="61-90">61-90 dias</button>
+                            <button type="button" class="filter-btn" data-range="91-180">91-180 dias</button>
+                            <button type="button" class="filter-btn" data-range="181+">180+ dias</button>
+                            <button type="button" class="filter-btn" data-range="never">Nunca compraram</button>
+                        </div>
+                        <input type="hidden" id="selectedRange" value="0-30">
+
+                        <label class="checkbox-option" style="margin-top: 16px;">
+                            <input type="checkbox" id="includeNoDate" name="includeNoDate">
+                            <span>Incluir clientes sem data de última compra (nunca compraram)</span>
+                        </label>
+                    </div>
+
+                    <!-- Filtro por meses -->
+                    <div class="form-group hidden" id="monthsFilter">
+                        <label>Selecione os meses:</label>
+                        <div class="months-grid">
+                            <label class="month-option">
+                                <input type="checkbox" value="1">
+                                <span>Janeiro</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="2">
+                                <span>Fevereiro</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="3">
+                                <span>Março</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="4">
+                                <span>Abril</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="5">
+                                <span>Maio</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="6">
+                                <span>Junho</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="7">
+                                <span>Julho</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="8">
+                                <span>Agosto</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="9">
+                                <span>Setembro</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="10">
+                                <span>Outubro</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="11">
+                                <span>Novembro</span>
+                            </label>
+                            <label class="month-option">
+                                <input type="checkbox" value="12">
+                                <span>Dezembro</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Botão de análise -->
+                    <button type="submit" class="btn-primary" id="analyzeBtn">
+                        <span id="btnText">Analisar Planilha</span>
+                        <span id="btnLoader" class="loader hidden"></span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Resultados -->
+            <div id="results" class="results-section hidden">
+                <div class="results-header">
+                    <h2>Resultados da Análise</h2>
+                    <div class="results-info">
+                        <div class="info-card">
+                            <span class="info-label">Clientes encontrados:</span>
+                            <span class="info-value" id="totalClientes">0</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Filtro aplicado:</span>
+                            <span class="info-value" id="filterApplied">-</span>
+                        </div>
+                    </div>
+                    <button class="btn-export" id="exportBtn">
+                        Exportar CSV
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nome Fantasia</th>
+                                <th>Última Venda</th>
+                                <th>Dias Inativo</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mensagem de erro -->
+            <div id="errorMessage" class="error-message hidden"></div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
