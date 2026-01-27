@@ -5,11 +5,15 @@ import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 
-# Criar pasta de uploads se não existir
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# Usar /tmp na Vercel (serverless) ou uploads localmente
+if os.environ.get('VERCEL'):
+    app.config['UPLOAD_FOLDER'] = '/tmp'
+else:
+    app.config['UPLOAD_FOLDER'] = 'uploads'
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 
 def parse_date(date_str):
     """Converte string de data para datetime"""
@@ -148,6 +152,10 @@ def analyze_spreadsheet(file_path, filter_type, filter_value, include_no_date=Fa
 def index():
     return render_template('index.html')
 
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204  # No content
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     try:
@@ -183,7 +191,13 @@ def analyze():
         return jsonify(result)
 
     except Exception as e:
-        return jsonify({'error': f'Erro ao processar arquivo: {str(e)}'}), 500
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Erro detalhado: {error_details}")  # Log para debug
+        return jsonify({
+            'error': f'Erro ao processar arquivo: {str(e)}',
+            'details': error_details if app.debug else None
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
