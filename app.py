@@ -2,7 +2,11 @@ from flask import Flask, render_template, request, jsonify
 import pandas as pd
 from datetime import datetime, timedelta
 import os
+import sys
 from werkzeug.utils import secure_filename
+
+# Adicionar diretório atual ao path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(__name__)
 
@@ -154,7 +158,12 @@ def index():
 
 @app.route('/favicon.ico')
 def favicon():
-    return '', 204  # No content
+    from flask import send_from_directory
+    return send_from_directory(
+        os.path.join(app.root_path, 'static', 'images'),
+        'favicon.svg',
+        mimetype='image/svg+xml'
+    )
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -200,4 +209,8 @@ def analyze():
         }), 500
 
 if __name__ == '__main__':
+    # Desenvolvimento local
     app.run(debug=True, port=5001)
+else:
+    # Produção (Vercel)
+    app.config['DEBUG'] = False
