@@ -5,13 +5,18 @@
 }
 
 :root {
-    --primary-color: #2563eb;
-    --primary-hover: #1d4ed8;
-    --success-color: #10b981;
-    --danger-color: #ef4444;
+    --primary-color: #1E3A8A;
+    /* Navy Blue */
+    --primary-hover: #1e40af;
+    --secondary-color: #881337;
+    /* Wine Red */
+    --success-color: #059669;
+    --danger-color: #991b1b;
+    /* Darker red */
     --text-primary: #1f2937;
-    --text-secondary: #6b7280;
+    --text-secondary: #4b5563;
     --background: #f9fafb;
+    /* Keeping light background */
     --card-bg: #ffffff;
     --border-color: #e5e7eb;
     --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -36,6 +41,22 @@ body {
 header {
     text-align: center;
     margin-bottom: 40px;
+}
+
+.logo {
+    max-height: 80px;
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.header-icon {
+    width: 32px;
+    height: 32px;
+    vertical-align: bottom;
+    color: var(--secondary-color);
+    margin-right: 8px;
 }
 
 header h1 {
@@ -147,9 +168,9 @@ header p {
 }
 
 .filter-btn.active {
-    background: var(--primary-color);
+    background: var(--secondary-color);
     color: white;
-    border-color: var(--primary-color);
+    border-color: var(--secondary-color);
 }
 
 /* Months Grid */
@@ -174,7 +195,7 @@ header p {
     background: var(--background);
 }
 
-.month-option input:checked + span {
+.month-option input:checked+span {
     font-weight: 600;
     color: var(--primary-color);
 }
@@ -262,7 +283,9 @@ header p {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Results Section */
@@ -279,6 +302,7 @@ header p {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -402,7 +426,8 @@ tbody tr:last-child td {
         font-size: 0.875rem;
     }
 
-    th, td {
+    th,
+    td {
         padding: 8px 12px;
     }
 }
