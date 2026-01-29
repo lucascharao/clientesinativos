@@ -67,116 +67,117 @@
                         </div>
                     </div>
 
-                    <!-- Tipo de filtro -->
-                    <div class="form-group">
-                        <label>Tipo de Filtro:</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="filterType" value="days" checked>
-                                <span>Por Dias</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="filterType" value="months">
-                                <span>Por Meses do Ano</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="filterType" value="custom">
-                                <span>Período Personalizado</span>
+                    <!-- Seção de Filtros (Oculta até o upload) -->
+                    <div id="filtersSection" class="hidden">
+                        <!-- Tipo de filtro -->
+                        <div class="form-group">
+                            <label>Tipo de Filtro:</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="filterType" value="days" checked>
+                                    <span>Por Dias</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="filterType" value="months">
+                                    <span>Por Meses do Ano</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="filterType" value="custom">
+                                    <span>Período Personalizado</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Filtro por dias -->
+                        <div class="form-group" id="daysFilter">
+                            <label>Selecione a faixa de inatividade:</label>
+                            <div class="button-group">
+                                <button type="button" class="filter-btn active" data-range="0-30">0-30 dias</button>
+                                <button type="button" class="filter-btn" data-range="31-60">31-60 dias</button>
+                                <button type="button" class="filter-btn" data-range="61-90">61-90 dias</button>
+                                <button type="button" class="filter-btn" data-range="91-180">91-180 dias</button>
+                                <button type="button" class="filter-btn" data-range="181+">180+ dias</button>
+                                <button type="button" class="filter-btn" data-range="never">Nunca compraram</button>
+                            </div>
+                            <input type="hidden" id="selectedRange" value="0-30">
+
+                            <label class="checkbox-option" style="margin-top: 16px;">
+                                <input type="checkbox" id="includeNoDate" name="includeNoDate">
+                                <span>Incluir clientes sem data de última compra (nunca compraram)</span>
                             </label>
                         </div>
-                    </div>
 
-                    <!-- Filtro por dias -->
-                    <div class="form-group" id="daysFilter">
-                        <label>Selecione a faixa de inatividade:</label>
-                        <div class="button-group">
-                            <button type="button" class="filter-btn active" data-range="0-30">0-30 dias</button>
-                            <button type="button" class="filter-btn" data-range="31-60">31-60 dias</button>
-                            <button type="button" class="filter-btn" data-range="61-90">61-90 dias</button>
-                            <button type="button" class="filter-btn" data-range="91-180">91-180 dias</button>
-                            <button type="button" class="filter-btn" data-range="181+">180+ dias</button>
-                            <button type="button" class="filter-btn" data-range="never">Nunca compraram</button>
+                        <!-- Filtro por período personalizado -->
+                        <div class="form-group hidden" id="customFilter">
+                            <label>Selecione o período de inatividade:</label>
+                            <p class="helper-text">Selecione o início e o fim do período no calendário abaixo.</p>
+                            <div class="date-range-container">
+                                <input type="text" id="dateRange" class="date-range-input"
+                                    placeholder="Selecione o período...">
+                            </div>
                         </div>
-                        <input type="hidden" id="selectedRange" value="0-30">
 
-                        <label class="checkbox-option" style="margin-top: 16px;">
-                            <input type="checkbox" id="includeNoDate" name="includeNoDate">
-                            <span>Incluir clientes sem data de última compra (nunca compraram)</span>
-                        </label>
-                    </div>
-
-                    <!-- Filtro por período personalizado -->
-                    <div class="form-group hidden" id="customFilter">
-                        <label>Selecione o período de inatividade:</label>
-                        <p class="helper-text">Selecione o início e o fim do período no calendário abaixo.</p>
-                        <div class="date-range-container">
-                            <input type="text" id="dateRange" class="date-range-input"
-                                placeholder="Selecione o período...">
+                        <!-- Filtro por meses -->
+                        <div class="form-group hidden" id="monthsFilter">
+                            <label>Selecione os meses:</label>
+                            <div class="months-grid">
+                                <label class="month-option">
+                                    <input type="checkbox" value="1">
+                                    <span>Janeiro</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="2">
+                                    <span>Fevereiro</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="3">
+                                    <span>Março</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="4">
+                                    <span>Abril</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="5">
+                                    <span>Maio</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="6">
+                                    <span>Junho</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="7">
+                                    <span>Julho</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="8">
+                                    <span>Agosto</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="9">
+                                    <span>Setembro</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="10">
+                                    <span>Outubro</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="11">
+                                    <span>Novembro</span>
+                                </label>
+                                <label class="month-option">
+                                    <input type="checkbox" value="12">
+                                    <span>Dezembro</span>
+                                </label>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- ... other filters ... -->
-
-                    <!-- Filtro por meses -->
-                    <div class="form-group hidden" id="monthsFilter">
-                        <label>Selecione os meses:</label>
-                        <div class="months-grid">
-                            <label class="month-option">
-                                <input type="checkbox" value="1">
-                                <span>Janeiro</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="2">
-                                <span>Fevereiro</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="3">
-                                <span>Março</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="4">
-                                <span>Abril</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="5">
-                                <span>Maio</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="6">
-                                <span>Junho</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="7">
-                                <span>Julho</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="8">
-                                <span>Agosto</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="9">
-                                <span>Setembro</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="10">
-                                <span>Outubro</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="11">
-                                <span>Novembro</span>
-                            </label>
-                            <label class="month-option">
-                                <input type="checkbox" value="12">
-                                <span>Dezembro</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Botão de análise -->
-                    <button type="submit" class="btn-primary" id="analyzeBtn">
-                        <span id="btnText">Analisar Planilha</span>
-                        <span id="btnLoader" class="loader hidden"></span>
-                    </button>
+                        <!-- Botão de análise -->
+                        <button type="submit" class="btn-primary" id="analyzeBtn">
+                            <span id="btnText">Analisar Planilha</span>
+                            <span id="btnLoader" class="loader hidden"></span>
+                        </button>
+                    </div> <!-- Fim seção filtros -->
                 </form>
             </div>
 

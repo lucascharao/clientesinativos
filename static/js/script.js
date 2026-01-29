@@ -32,6 +32,7 @@ fileInput.addEventListener('change', async (e) => {
     } else {
         fileName.textContent = 'Insira sua planilha aqui';
         document.getElementById('dashboardPreview').classList.add('hidden');
+        document.getElementById('filtersSection').classList.add('hidden');
     }
 });
 
@@ -39,8 +40,7 @@ async function loadPreview(file) {
     const formData = new FormData();
     formData.append('file', file);
 
-    // Mostrar loading em algum lugar ou desabilitar inputs seria bom
-    // Por enquanto, apenas vamos tentar pegar os dados
+    // Feedback visual de carregamento poderia ser adicionado aqui
 
     try {
         const response = await fetch('/preview', {
@@ -51,8 +51,9 @@ async function loadPreview(file) {
         const data = await response.json();
 
         if (!response.ok) {
-            console.error(data.error); // Silencioso ou showError?
+            console.error(data.error);
             showError(data.error);
+            document.getElementById('filtersSection').classList.add('hidden');
             return;
         }
 
@@ -63,11 +64,19 @@ async function loadPreview(file) {
         document.getElementById('dashLastSale').textContent = data.ultima_venda;
         document.getElementById('dashNever').textContent = data.nunca_compraram;
 
-        // Mostrar
-        document.getElementById('dashboardPreview').classList.remove('hidden');
+        // Mostrar Dashboard e Filtros
+        const dashboard = document.getElementById('dashboardPreview');
+        const filters = document.getElementById('filtersSection');
+
+        dashboard.classList.remove('hidden');
+        filters.classList.remove('hidden');
+
+        // Scroll suave para melhor visualização
+        // dashboard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     } catch (error) {
         console.error("Preview error:", error);
+        showError("Erro ao gerar pré-visualização da planilha.");
     }
 }
 
