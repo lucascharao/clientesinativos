@@ -34,17 +34,13 @@ def parse_date(date_str):
         except:
             return None
 
-def analyze_spreadsheet(file_path, filter_type, filter_value, include_no_date=False):
-    """Analisa a planilha e retorna clientes sem compras no período"""
-
+def read_and_parse_spreadsheet(file_path):
+    """Lê a planilha, detecta cabeçalho dinamicamente e faz parse das datas"""
     # Buscar dinamicamente a linha de cabeçalho
-    # Ler as primeiras 50 linhas para encontrar onde estão os dados
     df_temp = pd.read_excel(file_path, header=None, nrows=50)
     
     header_row_index = 0
-    found_header = False
-    
-    required_cols_set = {'CÓDIGO', 'NOME FANTASIA', 'TOTAL'}
+    header_found = False
     
     for index, row in df_temp.iterrows():
         # Converter valores para string e uppercase para verificar
@@ -54,7 +50,7 @@ def analyze_spreadsheet(file_path, filter_type, filter_value, include_no_date=Fa
         # Verificar se encontra colunas chave
         if 'CÓDIGO' in row_set and 'NOME FANTASIA' in row_set:
             header_row_index = index
-            found_header = True
+            header_found = True
             break
             
     # Ler planilha com o cabeçalho correto
@@ -63,11 +59,58 @@ def analyze_spreadsheet(file_path, filter_type, filter_value, include_no_date=Fa
     # Normalizar nomes das colunas para uppercase e strip
     df.columns = [str(col).upper().strip() for col in df.columns]
 
-    # Filtrar apenas colunas necessárias
-    df = df[['CÓDIGO', 'NOME FANTASIA', 'ÚLTIMA VENDA', 'TOTAL']].copy()
+    # Verificar existência das colunas necessárias
+    required = ['CÓDIGO', 'NOME FANTASIA', 'ÚLTIMA VENDA', 'TOTAL']
+    available = df.columns.tolist()
+    
+    # Se não encontrar todas, tentar fallback ou apenas avisar
+    # Para simplificar, vamos assumir que se achou o header, as colunas estão lá ou parciais.
+    # Mas vamos filtrar apenas o que existe para não dar erro
+    cols_to_use = [c for c in required if c in available]
+    df = df[cols_to_use].copy()
+    
+    # Garantir que TOTAIS seja numérico
+    if 'TOTAL' in df.columns:
+         df['TOTAL'] = pd.to_numeric(df['TOTAL'], errors='coerce').fillna(0)
 
     # Converter coluna ÚLTIMA VENDA para datetime
-    df['ÚLTIMA VENDA'] = df['ÚLTIMA VENDA'].apply(parse_date)
+    if 'ÚLTIMA VENDA' in df.columns:
+        df['ÚLTIMA VENDA'] = df['ÚLTIMA VENDA'].apply(parse_date)
+        
+    return df
+
+def preview_spreadsheet(file_path):
+    """Gera metadados e estatísticas da planilha para o dashboard"""
+    df = read_and_parse_spreadsheet(file_path)
+    
+    total_clientes = len(df)
+    total_valor = df['TOTAL'].sum() if 'TOTAL' in df.columns else 0
+    
+    # Estatísticas de data
+    first_sale = None
+    last_sale = None
+    never_bought_count = 0
+    
+    if 'ÚLTIMA VENDA' in df.columns:
+        valid_dates = df[df['ÚLTIMA VENDA'].notna()]['ÚLTIMA VENDA']
+        never_bought_count = df['ÚLTIMA VENDA'].isna().sum()
+        
+        if not valid_dates.empty:
+            first_sale = valid_dates.min().strftime('%d/%m/%Y')
+            last_sale = valid_dates.max().strftime('%d/%m/%Y')
+            
+    return {
+        'total_clientes': int(total_clientes),
+        'total_valor': f"R$ {total_valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        'primeira_venda': first_sale or '-',
+        'ultima_venda': last_sale or '-',
+        'nunca_compraram': int(never_bought_count)
+    }
+
+def analyze_spreadsheet(file_path, filter_type, filter_value, include_no_date=False):
+    """Analisa a planilha e retorna clientes sem compras no período"""
+    
+    df = read_and_parse_spreadsheet(file_path) # Usar a helper function
 
     # Data de referência (hoje)
     today = datetime.now()
@@ -251,6 +294,35 @@ def analyze():
         import traceback
         error_details = traceback.format_exc()
         print(f"Erro detalhado: {error_details}")  # Log para debug
+        return jsonify({
+            'error': f'Erro ao processar arquivo: {str(e)}',
+            'details': error_details if app.debug else None
+        }), 500
+
+@app.route('/preview', methods=['POST'])
+def preview():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'Nenhum arquivo enviado'}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
+
+        if not file.filename.endswith(('.xlsx', '.xls')):
+            return jsonify({'error': 'Apenas arquivos Excel (.xlsx, .xls) são permitidos'}), 400
+
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+        result = preview_spreadsheet(filepath)
+        os.remove(filepath)
+
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
         return jsonify({
             'error': f'Erro ao processar arquivo: {str(e)}',
             'details': error_details if app.debug else None

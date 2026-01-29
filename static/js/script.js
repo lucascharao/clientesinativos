@@ -22,14 +22,54 @@ const exportBtn = document.getElementById('exportBtn');
 let currentResults = [];
 
 // Atualizar nome do arquivo selecionado
-fileInput.addEventListener('change', (e) => {
+// Atualizar nome do arquivo selecionado e carregar preview
+fileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (file) {
         fileName.textContent = file.name;
+        // Chamar preview
+        await loadPreview(file);
     } else {
         fileName.textContent = 'Insira sua planilha aqui';
+        document.getElementById('dashboardPreview').classList.add('hidden');
     }
 });
+
+async function loadPreview(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Mostrar loading em algum lugar ou desabilitar inputs seria bom
+    // Por enquanto, apenas vamos tentar pegar os dados
+
+    try {
+        const response = await fetch('/preview', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error(data.error); // Silencioso ou showError?
+            showError(data.error);
+            return;
+        }
+
+        // Preencher dashboard
+        document.getElementById('dashTotalClientes').textContent = data.total_clientes;
+        document.getElementById('dashTotalValor').textContent = data.total_valor;
+        document.getElementById('dashFirstSale').textContent = data.primeira_venda;
+        document.getElementById('dashLastSale').textContent = data.ultima_venda;
+        document.getElementById('dashNever').textContent = data.nunca_compraram;
+
+        // Mostrar
+        document.getElementById('dashboardPreview').classList.remove('hidden');
+
+    } catch (error) {
+        console.error("Preview error:", error);
+    }
+}
 
 // Alternar entre filtros de dias, meses e personalizado
 document.querySelectorAll('input[name="filterType"]').forEach(radio => {
