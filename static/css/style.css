@@ -433,26 +433,12 @@ tbody tr:last-child td {
 }
 
 /* Custom Date Filter Styles */
-.date-inputs {
-    display: flex;
-    gap: 20px;
+.date-range-container {
     margin-top: 10px;
 }
 
-.date-field {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.date-field label {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-}
-
-.date-field input[type="date"] {
+.date-range-input {
+    width: 100%;
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -461,24 +447,19 @@ tbody tr:last-child td {
     font-family: inherit;
     font-size: 1rem;
     transition: var(--transition);
+    cursor: pointer;
 }
 
-.date-field input[type="date"]:focus {
+.date-range-input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.2);
+    /* Navy blue tint */
 }
 
 .helper-text {
     font-size: 0.85rem;
     color: var(--text-secondary);
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     font-style: italic;
-}
-
-@media (max-width: 600px) {
-    .date-inputs {
-        flex-direction: column;
-        gap: 15px;
-    }
 }

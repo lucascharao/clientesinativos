@@ -60,6 +60,22 @@ filterBtns.forEach(btn => {
     });
 });
 
+// Inicializar Flatpickr
+const dateRangeInput = document.getElementById('dateRange');
+let datePicker = null;
+
+if (dateRangeInput) {
+    datePicker = flatpickr(dateRangeInput, {
+        mode: "range",
+        dateFormat: "d/m/Y",
+        locale: "pt",
+        conjunction: " até ",
+        onChange: function (selectedDates, dateStr, instance) {
+            // Pode adicionar lógica extra aqui se necessário
+        }
+    });
+}
+
 // Submeter formulário
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -99,20 +115,20 @@ uploadForm.addEventListener('submit', async (e) => {
 
         formData.append('filter_value', selectedMonths.join(','));
     } else if (filterType === 'custom') {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-
-        if (!startDate || !endDate) {
+        if (!datePicker || datePicker.selectedDates.length < 2) {
             showError('Por favor, selecione a data inicial e a data final.');
             return;
         }
 
-        if (new Date(startDate) > new Date(endDate)) {
-            showError('A data inicial não pode ser maior que a data final.');
-            return;
-        }
+        const startDate = datePicker.selectedDates[0];
+        const endDate = datePicker.selectedDates[1];
 
-        formData.append('filter_value', `${startDate}|${endDate}`);
+        // Formatar para YYYY-MM-DD
+        const formatDate = (date) => {
+            return date.toISOString().split('T')[0];
+        };
+
+        formData.append('filter_value', `${formatDate(startDate)}|${formatDate(endDate)}`);
     }
 
     // Mostrar loading

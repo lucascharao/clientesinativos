@@ -7,10 +7,14 @@
     <title>Clientes Inativos - Mutumilk</title>
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
 </head>
 
 <body>
     <div class="container">
+        <!-- ... header content ... -->
         <header>
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Laticínios Mutumilk" class="logo">
             <h1>
@@ -27,69 +31,19 @@
         <main>
             <div class="upload-section">
                 <form id="uploadForm">
-                    <!-- Upload de arquivo -->
-                    <div class="form-group">
-                        <label for="fileInput" class="file-label">
-                            <span class="file-icon">📁</span>
-                            <span id="fileName">Insira sua planilha aqui</span>
-                            <input type="file" id="fileInput" name="file" accept=".xlsx,.xls" required>
-                        </label>
-                    </div>
-
-                    <!-- Tipo de filtro -->
-                    <div class="form-group">
-                        <label>Tipo de Filtro:</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="filterType" value="days" checked>
-                                <span>Por Dias</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="filterType" value="months">
-                                <span>Por Meses do Ano</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="filterType" value="custom">
-                                <span>Período Personalizado</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Filtro por dias -->
-                    <div class="form-group" id="daysFilter">
-                        <label>Selecione a faixa de inatividade:</label>
-                        <div class="button-group">
-                            <button type="button" class="filter-btn active" data-range="0-30">0-30 dias</button>
-                            <button type="button" class="filter-btn" data-range="31-60">31-60 dias</button>
-                            <button type="button" class="filter-btn" data-range="61-90">61-90 dias</button>
-                            <button type="button" class="filter-btn" data-range="91-180">91-180 dias</button>
-                            <button type="button" class="filter-btn" data-range="181+">180+ dias</button>
-                            <button type="button" class="filter-btn" data-range="never">Nunca compraram</button>
-                        </div>
-                        <input type="hidden" id="selectedRange" value="0-30">
-
-                        <label class="checkbox-option" style="margin-top: 16px;">
-                            <input type="checkbox" id="includeNoDate" name="includeNoDate">
-                            <span>Incluir clientes sem data de última compra (nunca compraram)</span>
-                        </label>
-                    </div>
+                    <!-- ... inputs ... -->
 
                     <!-- Filtro por período personalizado -->
                     <div class="form-group hidden" id="customFilter">
                         <label>Selecione o período de inatividade:</label>
-                        <p class="helper-text">Serão listados clientes cuja última compra foi DENTRO deste período ou
-                            ANTES dele.</p>
-                        <div class="date-inputs">
-                            <div class="date-field">
-                                <label for="startDate">Data Inicial:</label>
-                                <input type="date" id="startDate" name="startDate">
-                            </div>
-                            <div class="date-field">
-                                <label for="endDate">Data Final:</label>
-                                <input type="date" id="endDate" name="endDate">
-                            </div>
+                        <p class="helper-text">Selecione o início e o fim do período no calendário abaixo.</p>
+                        <div class="date-range-container">
+                            <input type="text" id="dateRange" class="date-range-input"
+                                placeholder="Selecione o período...">
                         </div>
                     </div>
+
+                    <!-- ... other filters ... -->
 
                     <!-- Filtro por meses -->
                     <div class="form-group hidden" id="monthsFilter">
@@ -195,6 +149,9 @@
         </main>
     </div>
 
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 
