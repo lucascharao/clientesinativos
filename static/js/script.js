@@ -31,15 +31,19 @@ fileInput.addEventListener('change', (e) => {
     }
 });
 
-// Alternar entre filtros de dias e meses
+// Alternar entre filtros de dias, meses e personalizado
 document.querySelectorAll('input[name="filterType"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
+        daysFilter.classList.add('hidden');
+        monthsFilter.classList.add('hidden');
+        document.getElementById('customFilter').classList.add('hidden');
+
         if (e.target.value === 'days') {
             daysFilter.classList.remove('hidden');
-            monthsFilter.classList.add('hidden');
-        } else {
-            daysFilter.classList.add('hidden');
+        } else if (e.target.value === 'months') {
             monthsFilter.classList.remove('hidden');
+        } else if (e.target.value === 'custom') {
+            document.getElementById('customFilter').classList.remove('hidden');
         }
     });
 });
@@ -82,7 +86,7 @@ uploadForm.addEventListener('submit', async (e) => {
     if (filterType === 'days') {
         formData.append('filter_value', selectedRangeInput.value);
         formData.append('include_no_date', includeNoDateCheckbox.checked ? 'true' : 'false');
-    } else {
+    } else if (filterType === 'months') {
         // Pegar meses selecionados
         const selectedMonths = Array.from(
             document.querySelectorAll('#monthsFilter input[type="checkbox"]:checked')
@@ -94,6 +98,21 @@ uploadForm.addEventListener('submit', async (e) => {
         }
 
         formData.append('filter_value', selectedMonths.join(','));
+    } else if (filterType === 'custom') {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (!startDate || !endDate) {
+            showError('Por favor, selecione a data inicial e a data final.');
+            return;
+        }
+
+        if (new Date(startDate) > new Date(endDate)) {
+            showError('A data inicial não pode ser maior que a data final.');
+            return;
+        }
+
+        formData.append('filter_value', `${startDate}|${endDate}`);
     }
 
     // Mostrar loading

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -38,6 +40,10 @@
                                 <input type="radio" name="filterType" value="months">
                                 <span>Por Meses do Ano</span>
                             </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filterType" value="custom">
+                                <span>Período Personalizado</span>
+                            </label>
                         </div>
                     </div>
 
@@ -58,6 +64,23 @@
                             <input type="checkbox" id="includeNoDate" name="includeNoDate">
                             <span>Incluir clientes sem data de última compra (nunca compraram)</span>
                         </label>
+                    </div>
+
+                    <!-- Filtro por período personalizado -->
+                    <div class="form-group hidden" id="customFilter">
+                        <label>Selecione o período de inatividade:</label>
+                        <p class="helper-text">Serão listados clientes cuja última compra foi DENTRO deste período ou
+                            ANTES dele.</p>
+                        <div class="date-inputs">
+                            <div class="date-field">
+                                <label for="startDate">Data Inicial:</label>
+                                <input type="date" id="startDate" name="startDate">
+                            </div>
+                            <div class="date-field">
+                                <label for="endDate">Data Final:</label>
+                                <input type="date" id="endDate" name="endDate">
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Filtro por meses -->
@@ -166,4 +189,5 @@
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
+
 </html>

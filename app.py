@@ -144,6 +144,36 @@ def analyze_spreadsheet(file_path, filter_type, filter_value, include_no_date=Fa
         }
         selected_month_names = [month_names[m] for m in selected_months]
         filter_description = f"meses: {', '.join(selected_month_names)}"
+    
+    elif filter_type == 'custom':
+        # Filtro por período personalizado
+        start_date_str, end_date_str = filter_value.split('|')
+        
+        # Converter para datetime (início do dia e fim do dia)
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+        # Ajustar data final para incluir o dia todo (23:59:59)
+        end_date = end_date.replace(hour=23, minute=59, second=59)
+
+        # Filtrar clientes cuja última venda está dentro do range e ANTES da data final
+        # A lógica é: mostrar quem comprou neste período
+        # Mas o usuário pediu "clientes inativos". 
+        # Porém, a descrição na tela diz "Listar clientes cuja última compra foi DENTRO deste período ou ANTES dele"
+        # Não, na tela coloquei: "Serão listados clientes cuja última compra foi DENTRO deste período"
+        # Vamos assumir que o usuário quer ver quem comprou entre X e Y.
+        
+        # Re-lendo o pedido: "coloque uma opção de o usuário selecionar o calendario, o ano e a data de inicio e fim"
+        # Contexto: "Puxar" dados antigos. Então ele quer ver quem comprou em 2021, por exemplo.
+        
+        filtered_df = df[
+            (df['ÚLTIMA VENDA'].notna()) &
+            (df['ÚLTIMA VENDA'] >= start_date) &
+            (df['ÚLTIMA VENDA'] <= end_date)
+        ].copy()
+        
+        s_display = start_date.strftime('%d/%m/%Y')
+        e_display = end_date.strftime('%d/%m/%Y')
+        filter_description = f"vendas entre {s_display} e {e_display}"
 
     # Formatar resultado
     results = []
