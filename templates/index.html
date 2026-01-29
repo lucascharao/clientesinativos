@@ -31,7 +31,79 @@
         <main>
             <div class="upload-section">
                 <form id="uploadForm">
-                    <!-- ... inputs ... -->
+                    <!-- Upload de arquivo -->
+                    <div class="form-group">
+                        <label for="fileInput" class="file-label">
+                            <span class="file-icon">📁</span>
+                            <span id="fileName">Insira sua planilha aqui</span>
+                            <input type="file" id="fileInput" name="file" accept=".xlsx,.xls" required>
+                        </label>
+                    </div>
+
+                    <!-- Dashboard Preview -->
+                    <div id="dashboardPreview" class="dashboard-preview hidden">
+                        <h3>Resumo da Planilha</h3>
+                        <div class="dashboard-grid">
+                            <div class="dash-card">
+                                <span class="dash-label">Total de Clientes</span>
+                                <span class="dash-value" id="dashTotalClientes">-</span>
+                            </div>
+                            <div class="dash-card">
+                                <span class="dash-label">Valor Total</span>
+                                <span class="dash-value" id="dashTotalValor">-</span>
+                            </div>
+                            <div class="dash-card">
+                                <span class="dash-label">Venda Mais Antiga</span>
+                                <span class="dash-value" id="dashFirstSale">-</span>
+                            </div>
+                            <div class="dash-card">
+                                <span class="dash-label">Venda Mais Recente</span>
+                                <span class="dash-value" id="dashLastSale">-</span>
+                            </div>
+                            <div class="dash-card">
+                                <span class="dash-label">Nunca Compraram</span>
+                                <span class="dash-value" id="dashNever">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tipo de filtro -->
+                    <div class="form-group">
+                        <label>Tipo de Filtro:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="filterType" value="days" checked>
+                                <span>Por Dias</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filterType" value="months">
+                                <span>Por Meses do Ano</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filterType" value="custom">
+                                <span>Período Personalizado</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Filtro por dias -->
+                    <div class="form-group" id="daysFilter">
+                        <label>Selecione a faixa de inatividade:</label>
+                        <div class="button-group">
+                            <button type="button" class="filter-btn active" data-range="0-30">0-30 dias</button>
+                            <button type="button" class="filter-btn" data-range="31-60">31-60 dias</button>
+                            <button type="button" class="filter-btn" data-range="61-90">61-90 dias</button>
+                            <button type="button" class="filter-btn" data-range="91-180">91-180 dias</button>
+                            <button type="button" class="filter-btn" data-range="181+">180+ dias</button>
+                            <button type="button" class="filter-btn" data-range="never">Nunca compraram</button>
+                        </div>
+                        <input type="hidden" id="selectedRange" value="0-30">
+
+                        <label class="checkbox-option" style="margin-top: 16px;">
+                            <input type="checkbox" id="includeNoDate" name="includeNoDate">
+                            <span>Incluir clientes sem data de última compra (nunca compraram)</span>
+                        </label>
+                    </div>
 
                     <!-- Filtro por período personalizado -->
                     <div class="form-group hidden" id="customFilter">
