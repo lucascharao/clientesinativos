@@ -37,13 +37,31 @@ def parse_date(date_str):
 def analyze_spreadsheet(file_path, filter_type, filter_value, include_no_date=False):
     """Analisa a planilha e retorna clientes sem compras no período"""
 
-    # Ler planilha (header na linha 17, dados começam na linha 18)
-    df = pd.read_excel(file_path, header=17)
-
-    # Pegar a primeira linha como cabeçalhos reais
-    headers = df.iloc[0].values
-    df = df.iloc[1:].copy()
-    df.columns = headers
+    # Buscar dinamicamente a linha de cabeçalho
+    # Ler as primeiras 50 linhas para encontrar onde estão os dados
+    df_temp = pd.read_excel(file_path, header=None, nrows=50)
+    
+    header_row_index = 0
+    found_header = False
+    
+    required_cols_set = {'CÓDIGO', 'NOME FANTASIA', 'TOTAL'}
+    
+    for index, row in df_temp.iterrows():
+        # Converter valores para string e uppercase para verificar
+        row_values = [str(val).upper().strip() for val in row.values]
+        row_set = set(row_values)
+        
+        # Verificar se encontra colunas chave
+        if 'CÓDIGO' in row_set and 'NOME FANTASIA' in row_set:
+            header_row_index = index
+            found_header = True
+            break
+            
+    # Ler planilha com o cabeçalho correto
+    df = pd.read_excel(file_path, header=header_row_index)
+    
+    # Normalizar nomes das colunas para uppercase e strip
+    df.columns = [str(col).upper().strip() for col in df.columns]
 
     # Filtrar apenas colunas necessárias
     df = df[['CÓDIGO', 'NOME FANTASIA', 'ÚLTIMA VENDA', 'TOTAL']].copy()
